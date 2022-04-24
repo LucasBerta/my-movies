@@ -1,0 +1,8 @@
+.search {
+  font-size: 1.6rem;
+
+  display: grid;
+  gap: 1.2rem;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+  grid-auto-rows: min-content;
+}
