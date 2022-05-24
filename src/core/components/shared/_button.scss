@@ -1,0 +1,19 @@
+.my-movies__button {
+  &:active,
+  &:focus,
+  &:visited {
+    border: none;
+    outline: none;
+  }
+
+  &--icon {
+    color: #fff;
+    font-size: 2rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+  }
+}

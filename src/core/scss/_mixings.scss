@@ -8,3 +8,8 @@
 @mixin defaultTransition($properties: all) {
   transition: $properties 0.2s ease-in-out;
 }
+
+@mixin defaultAnimation($animation, $fillMode: forwards) {
+  animation: $animation 0.2s ease-in-out;
+  animation-fill-mode: $fillMode;
+}

@@ -1,4 +1,5 @@
 import { getDiscoverMovies } from "../../core/api/discover"
+import { fetchMovieReviews } from "../../core/api/movies";
 
 export const MOVIES_DISCOVER_ACTION = 'MOVIES_DISCOVER_ACTION';
 

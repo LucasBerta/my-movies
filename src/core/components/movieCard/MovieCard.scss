@@ -16,20 +16,11 @@
   justify-content: end;
 
   cursor: pointer;
-  @include defaultTransition(transform);
-
-  &:hover {
-    transform: scale(1.05);
-  }
 
   &__poster {
     height: 30rem;
     background-position: center;
     background-size: cover;
-    > img {
-      width: 100%;
-      transform: scale(1.1);
-    }
   }
 
   &__details {
@@ -38,6 +29,10 @@
     position: relative;
     padding: 2rem 1rem 0.5rem 1rem;
     height: 10rem;
+
+    &--title {
+      margin-top: 1rem;
+    }
 
     &--rating-box {
       @include flexCenter;
@@ -89,6 +84,190 @@
       font-size: 1.4rem;
       font-weight: 400;
       padding-top: 0.5rem;
+    }
+  }
+
+  &__detail {
+    $posterWidth: 100vw;
+    $posterHeight: 75vh;
+
+    @include flexCenter;
+    align-items: flex-start;
+
+    &--close {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      padding: 1rem;
+      font-size: 2.4rem;
+      cursor: pointer;
+    }
+
+    &,
+    &--backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 9999;
+    }
+
+    &--backdrop {
+      background-color: #000;
+      opacity: 0.9;
+    }
+
+    &--container {
+      $gridGap: 1.2rem;
+      position: relative;
+      width: 100vw;
+      height: $posterHeight;
+      margin-top: 4rem;
+      padding: 2rem 22vw;
+      border-radius: 5px;
+      box-shadow: -2px -1px 15px 8px rgba(0, 0, 0, 0.75);
+      color: #fff;
+      z-index: 10000;
+
+      display: grid;
+      row-gap: $gridGap;
+      grid-template-columns:
+        [poster-start] repeat(4, 1fr)
+        [poster-end] 4rem
+        [data-start] repeat(8, 1fr)
+        [data-end];
+      grid-template-rows:
+        [poster-start top-gap-start] 2fr
+        [top-gat-end title-start] 2fr
+        [title-end actions-start] 2fr
+        [actions-end tagline-start] 1fr
+        [tagline-end synopsis-start] 2fr
+        [synopsis-end cast-start] 1fr
+        [cast-end] 2fr
+        [poster-end];
+
+      @include defaultAnimation(openModal);
+
+      @keyframes openModal {
+        0% {
+          transform: scale(0.3);
+          opacity: 0;
+        }
+
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      & > * {
+        z-index: 1000;
+      }
+    }
+
+    &--background-poster {
+      position: absolute;
+      width: $posterWidth;
+      height: $posterHeight;
+      background-size: cover;
+      background-position: center;
+      border-radius: 5px;
+      filter: saturate(125%) brightness(125%);
+      z-index: 1;
+    }
+
+    &--poster {
+      grid-column: poster-start / poster-end;
+      grid-row: poster-start / poster-end;
+      background-position: center;
+      background-size: cover;
+      border-radius: 5px;
+    }
+
+    &--title-container {
+      grid-column: data-start / data-end;
+      grid-row: title-start / title-end;
+    }
+
+    &--title {
+      font-weight: 700;
+      display: inline;
+      font-size: 3rem;
+
+      span {
+        font-weight: 400;
+      }
+    }
+
+    &--subtitle {
+      opacity: 0.7;
+      h5 {
+        display: inline;
+        font-size: 1.6rem;
+        font-weight: 400;
+
+        & + h5::before {
+          content: "\00a0\00a0\2022\00a0\00a0";
+          display: inline;
+          font-size: 1.1em;
+          font-weight: bold;
+          z-index: -1;
+        }
+      }
+    }
+
+    &--actions {
+      grid-column: data-start / data-end;
+      grid-row: actions-start / actions-end;
+      display: flex;
+
+      .movie-card__details--rating-box {
+        position: relative;
+        top: unset;
+      }
+
+      button {
+        margin-left: 1rem;
+      }
+    }
+
+    &--tagline {
+      opacity: 0.7;
+      font-size: 2rem;
+      font-style: italic;
+      grid-column: data-start / data-end;
+      grid-row: tagline-start / tagline-end;
+    }
+
+    &--synopsis {
+      grid-column: data-start / data-end;
+      grid-row: synopsis-start / synopsis-end;
+
+      h3 {
+        font-size: 2rem;
+      }
+
+      p {
+        margin-top: 1rem;
+        font-size: 1.6rem;
+      }
+    }
+
+    &--cast {
+      grid-column: data-start / data-end;
+      grid-row: cast-start / cast-end;
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1rem;
+
+      h3 {
+        font-size: 2rem;
+      }
+
+      p {
+        font-size: 1.6rem;
+      }
     }
   }
 }
