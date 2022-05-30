@@ -1,8 +1,15 @@
 .search {
-  font-size: 1.6rem;
+  &__movie-list {
+    font-size: 1.6rem;
 
-  display: grid;
-  gap: 1.2rem;
-  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
-  grid-auto-rows: min-content;
+    display: grid;
+    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+    grid-auto-rows: min-content;
+  }
+}
+
+.search-form {
+  width: 100%;
+  margin-bottom: 1rem;
 }

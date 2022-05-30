@@ -4,14 +4,13 @@ import { API_KEY, BASE_IMAGE_URL_500 } from '../../api';
 import './MovieCard.scss';
 import { useEffect, useState } from 'react';
 import { fetchMovie, fetchMovieCredits } from '../../api/movies';
-import Button from '../shared/Button';
+import NoImage from '../../assets/No-Image.png';
+import NoImageLandscape from '../../assets/No-Image-Landscape.jpg';
 
 function MovieCard({ movie }) {
   const [cardDetailOpen, setCardDetailOpen] = useState(false);
   const releaseDate = new Date(movie.release_date);
   const formattedDate = releaseDate.toLocaleDateString('en-IE', { dateStyle: 'long' })
-
-  console.log(new Date().getMilliseconds());
 
   function closeCardDetail() {
     removeCardDetailPageStyle();
@@ -22,7 +21,10 @@ function MovieCard({ movie }) {
     <>
       {cardDetailOpen && <MovieCardDetail movie={movie} onBackdropClick={closeCardDetail} />}
       <div className='movie-card' onClick={() => setCardDetailOpen(true)}>
-        <div className='movie-card__poster' style={{ backgroundImage: `url(${BASE_IMAGE_URL_500}${movie.poster_path}?api_key=${API_KEY})` }}></div>
+        <div
+          className='movie-card__poster'
+          style={{ backgroundImage: !!movie.poster_path ? `url(${BASE_IMAGE_URL_500}${movie.poster_path}?api_key=${API_KEY})` : `url(${NoImage})` }}
+        ></div>
         <div className='movie-card__details'>
           <Rating movie={movie} />
           <h3 className='movie-card__details--title'>{movie.title}</h3>
@@ -57,7 +59,6 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
   const [movieDetails, setMovieDetails] = useState({});
   const { topDirector, topWriter, topActor } = getTopCast(movieDetails);
   const formattedRuntime = `${Math.floor(movieDetails.runtime / 60)}h ${(movieDetails.runtime % 60)}m`;
-  console.log(movieDetails)
 
   useEffect(() => {
     fetchMovie(movie.id).then(response => {
@@ -65,7 +66,16 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
         setMovieDetails({ ...response.data, credits: credits.data });
       });
     });
-  }, []);
+
+    function handleOnPressEscape(event) {
+      if (event.key === 'Escape') {
+        onBackdropClick();
+      }
+    }
+
+    document.addEventListener('keydown', handleOnPressEscape);
+    return () => document.removeEventListener('keydown', handleOnPressEscape);
+  }, [movie, onBackdropClick]);
 
   setCardDetailPageStyle();
 
@@ -74,12 +84,15 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
       <div className='movie-card__detail--container'>
         <i className='movie-card__detail--close fa-solid fa-xmark' onClick={onBackdropClick}></i>
         <div className='movie-card__detail--background-poster'
-          style={{ backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.97) 22vw, rgba(0, 0, 0, 0.7)), url(${BASE_IMAGE_URL_500}${movie.backdrop_path}?api_key=${API_KEY})` }}
+          style={{
+            backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.97) 22vw, rgba(0, 0, 0, 0.7)),
+                              ${!!movie.backdrop_path ? `url(${BASE_IMAGE_URL_500}${movie.backdrop_path}?api_key=${API_KEY})` : `url(${NoImageLandscape})`}`
+          }}
         >
         </div>
 
         <div className='movie-card__detail--poster'
-          style={{ backgroundImage: `url(${BASE_IMAGE_URL_500}${movie.poster_path}?api_key=${API_KEY})` }}
+          style={{ backgroundImage: !!movie.poster_path ? `url(${BASE_IMAGE_URL_500}${movie.poster_path}?api_key=${API_KEY})` : `url(${NoImage})` }}
         >
 
         </div>
@@ -98,9 +111,9 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
 
         <div className='movie-card__detail--actions'>
           {movieDetails.id && <Rating movie={movieDetails} />}
-          <Button icon><i className='fa-regular fa-bookmark'></i></Button>
-          <Button icon><i className='fa-regular fa-eye'></i></Button>
-          <Button icon><i className='fa-regular fa-heart'></i></Button>
+          <i className='fa-regular fa-bookmark'></i>
+          <i className='fa-regular fa-eye'></i>
+          <i className='fa-regular fa-heart'></i>
         </div>
 
         <h3 className='movie-card__detail--tagline'>{movieDetails.tagline}</h3>
@@ -112,15 +125,15 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
 
         <div className='movie-card__detail--cast'>
           <div className='movie-card__detail--director'>
-            <h3>{topDirector.name}</h3>
+            <h3>{topDirector.name || 'N/A'}</h3>
             <p>{topDirector.gender === 1 ? 'Directress' : 'Director'}</p>
           </div>
           <div className='movie-card__detail--writer'>
-            <h3>{topWriter.name}</h3>
+            <h3>{topWriter.name || 'N/A'}</h3>
             <p>Writer</p>
           </div>
           <div className='movie-card__detail--actor'>
-            <h3>{topActor.name}</h3>
+            <h3>{topActor.name || 'N/A'}</h3>
             <p>{topActor.gender === 1 ? 'Actress' : 'Actor'}</p>
           </div>
         </div>
@@ -136,6 +149,7 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
 }
 
 // LOCAL FUNCTIONS
+
 function getTopCast(movie) {
   return {
     topDirector: getTopDirector(movie),
@@ -147,6 +161,8 @@ function getTopCast(movie) {
 function getTopDirector(movie) {
   if (!movie || !movie.credits) return {};
 
+  if (!movie?.credits?.crew || movie?.credits?.crew.length === 0) return {};
+
   return movie?.credits?.crew?.reduce((prev, curr) => {
     return curr.department === 'Directing' && curr.popularity > prev.popularity ? curr : prev;
   });
@@ -155,6 +171,8 @@ function getTopDirector(movie) {
 function getTopWriter(movie) {
   if (!movie || !movie.credits) return {};
 
+  if (!movie?.credits?.crew || movie?.credits?.crew.length === 0) return {};
+
   return movie?.credits?.crew?.reduce((prev, curr) => {
     return curr.department === 'Writing' && curr.popularity > prev.popularity ? curr : prev;
   });
@@ -162,6 +180,8 @@ function getTopWriter(movie) {
 
 function getTopActor(movie) {
   if (!movie || !movie.credits) return {};
+
+  if (!movie?.credits?.cast || movie?.credits?.cast.length === 0) return {};
 
   return movie?.credits?.cast?.reduce((prev, curr) => {
     return curr.department === 'Acting' && curr.popularity > prev.popularity ? curr : prev;

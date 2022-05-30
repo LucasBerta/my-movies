@@ -7,3 +7,13 @@ export function fetchMovie(id) {
 export function fetchMovieCredits(id) {
   return api.get(`/movie/${id}/credits`);
 }
+
+export function searchMovie(query, page) {
+  return api.get(`/search/movie`, {
+    params: {
+      query,
+      page,
+      include_adult: false,
+    }
+  });
+}
