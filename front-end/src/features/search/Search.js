@@ -5,6 +5,8 @@ import MovieCard from '../../core/components/movieCard/MovieCard';
 import { handleFetchDiscover, handleSearchMovie } from '../../redux/actions/movies.action';
 import './search.scss';
 
+import axios from "axios";
+
 function Search({ dispatch, movies }) {
   const [query, setQuery] = useState('');
 

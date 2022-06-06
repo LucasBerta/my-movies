@@ -1,6 +1,5 @@
 import reactDOM from 'react-dom';
 import PropTypes from 'prop-types';
-import { API_KEY, BASE_IMAGE_URL_500 } from '../../api';
 import './MovieCard.scss';
 import { useEffect, useState } from 'react';
 import { fetchMovie, fetchMovieCredits } from '../../api/movies';
@@ -23,7 +22,7 @@ function MovieCard({ movie }) {
       <div className='movie-card' onClick={() => setCardDetailOpen(true)}>
         <div
           className='movie-card__poster'
-          style={{ backgroundImage: !!movie.poster_path ? `url(${BASE_IMAGE_URL_500}${movie.poster_path}?api_key=${API_KEY})` : `url(${NoImage})` }}
+          style={{ backgroundImage: !!movie.poster_path ? `url(${movie.poster_path})` : `url(${NoImage})` }}
         ></div>
         <div className='movie-card__details'>
           <Rating movie={movie} />
@@ -86,13 +85,13 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
         <div className='movie-card__detail--background-poster'
           style={{
             backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.97) 22vw, rgba(0, 0, 0, 0.7)),
-                              ${!!movie.backdrop_path ? `url(${BASE_IMAGE_URL_500}${movie.backdrop_path}?api_key=${API_KEY})` : `url(${NoImageLandscape})`}`
+                              ${!!movie.backdrop_path ? `url(${movie.backdrop_path})` : `url(${NoImageLandscape})`}`
           }}
         >
         </div>
 
         <div className='movie-card__detail--poster'
-          style={{ backgroundImage: !!movie.poster_path ? `url(${BASE_IMAGE_URL_500}${movie.poster_path}?api_key=${API_KEY})` : `url(${NoImage})` }}
+          style={{ backgroundImage: !!movie.poster_path ? `url(${movie.poster_path})` : `url(${NoImage})` }}
         >
 
         </div>
