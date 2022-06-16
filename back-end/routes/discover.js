@@ -7,7 +7,7 @@ router.get('/discover/movie', (req, res) => {
   api.get('/discover/movie').then(response => {
     const _movies = transformImgPaths(response.data);
     res.send(_movies);
-  }).catch(err => handleError(res, err));;
+  }).catch(err => handleError(res, err));
 });
 
 module.exports = router;

@@ -7,13 +7,16 @@ import * as serviceWorker from './serviceWorker';
 import { createStore } from 'redux';
 import middleware from './redux/middleware';
 import reducers from './redux/reducers/combineReducers';
+import { CookiesProvider } from 'react-cookie';
 
 const store = createStore(reducers, middleware);
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <App />
+    <CookiesProvider>
+      <App />
+    </CookiesProvider>
   </Provider>
 );
 

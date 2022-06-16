@@ -1,15 +1,26 @@
+import { connect } from "react-redux";
 import reactDOM from 'react-dom';
 import PropTypes from 'prop-types';
 import './MovieCard.scss';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { fetchMovie, fetchMovieCredits } from '../../api/movies';
 import NoImage from '../../assets/No-Image.png';
 import NoImageLandscape from '../../assets/No-Image-Landscape.jpg';
 
-function MovieCard({ movie }) {
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
+import { IconButton } from '@mui/material';
+import { updateFavorite, updateWatchlist } from "../../api/watchlist";
+import { fetchUserConfigByMovie } from "../../api/userConfigByMovie";
+
+function MovieCard({ auth, movie }) {
   const [cardDetailOpen, setCardDetailOpen] = useState(false);
   const releaseDate = new Date(movie.release_date);
   const formattedDate = releaseDate.toLocaleDateString('en-IE', { dateStyle: 'long' })
+  const { loggedUserId } = auth;
 
   function closeCardDetail() {
     removeCardDetailPageStyle();
@@ -18,7 +29,7 @@ function MovieCard({ movie }) {
 
   return (
     <>
-      {cardDetailOpen && <MovieCardDetail movie={movie} onBackdropClick={closeCardDetail} />}
+      {cardDetailOpen && <MovieCardDetail movie={movie} onBackdropClick={closeCardDetail} loggedUserId={loggedUserId} />}
       <div className='movie-card' onClick={() => setCardDetailOpen(true)}>
         <div
           className='movie-card__poster'
@@ -54,15 +65,23 @@ function Rating({ movie }) {
   );
 }
 
-function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
+function MovieCardDetail({ loggedUserId, movie, onBackdropClick = () => { } }) {
   const [movieDetails, setMovieDetails] = useState({});
+  const [userConfigByMovie, setUserConfigByMovie] = useState({});
   const { topDirector, topWriter, topActor } = getTopCast(movieDetails);
   const formattedRuntime = `${Math.floor(movieDetails.runtime / 60)}h ${(movieDetails.runtime % 60)}m`;
+
+  const getUserConfigByMovie = useCallback(() => {
+    fetchUserConfigByMovie(loggedUserId, movie.id).then(response => {
+      setUserConfigByMovie(response.data);
+    });
+  }, [loggedUserId, movie]);
 
   useEffect(() => {
     fetchMovie(movie.id).then(response => {
       fetchMovieCredits(movie.id).then(credits => {
         setMovieDetails({ ...response.data, credits: credits.data });
+        getUserConfigByMovie();
       });
     });
 
@@ -74,9 +93,30 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
 
     document.addEventListener('keydown', handleOnPressEscape);
     return () => document.removeEventListener('keydown', handleOnPressEscape);
-  }, [movie, onBackdropClick]);
+  }, [movie, onBackdropClick, getUserConfigByMovie]);
 
   setCardDetailPageStyle();
+
+  ///////////////////////////
+  function isMovieOnWatchlist() {
+    return userConfigByMovie.isOnWatchlist;
+  }
+
+  function isMovieOnFavorites() {
+    return userConfigByMovie.IsOnFavorites;
+  }
+
+  function switchWatchlist(movie) {
+    updateWatchlist(loggedUserId, movie.id).then(() => {
+      getUserConfigByMovie();
+    });
+  }
+
+  function switchFavorite(movie) {
+    updateFavorite(loggedUserId, movie.id).then(() => {
+      getUserConfigByMovie();
+    });
+  }
 
   return reactDOM.createPortal(
     <div className='movie-card__detail'>
@@ -110,9 +150,18 @@ function MovieCardDetail({ movie, onBackdropClick = () => { } }) {
 
         <div className='movie-card__detail--actions'>
           {movieDetails.id && <Rating movie={movieDetails} />}
-          <i className='fa-regular fa-bookmark'></i>
-          <i className='fa-regular fa-eye'></i>
-          <i className='fa-regular fa-heart'></i>
+          <IconButton onClick={() => switchWatchlist(movie)}>
+            {isMovieOnWatchlist()
+              ? <BookmarkIcon />
+              : <BookmarkBorderIcon />
+            }
+          </IconButton>
+          <IconButton onClick={() => switchFavorite(movie)}>
+            {isMovieOnFavorites()
+              ? <FavoriteIcon />
+              : <FavoriteBorderIcon />
+            }
+          </IconButton>
         </div>
 
         <h3 className='movie-card__detail--tagline'>{movieDetails.tagline}</h3>
@@ -211,7 +260,11 @@ function getRatingColor({ vote_average }) {
 }
 
 /////////////////////////
-export default MovieCard;
+const mapStateToProps = ({ auth }) => ({
+  auth,
+});
+
+export default connect(mapStateToProps)(MovieCard);
 
 MovieCard.prototype = {
   movie: PropTypes.object,

@@ -2,6 +2,7 @@ const router = require('express').Router();
 const axios = require('axios');
 const { api } = require('../api');
 const { transformImgPaths, handleError, transformImgPath } = require('../common/util');
+const { createUser } = require('../db/user.db');
 
 // Search movies
 router.get('/search/movie', (req, res) => {
