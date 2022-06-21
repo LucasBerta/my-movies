@@ -110,7 +110,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      z-index: 9999;
+      z-index: 999;
     }
 
     &--backdrop {
@@ -128,7 +128,7 @@
       border-radius: 5px;
       box-shadow: -2px -1px 15px 8px rgba(0, 0, 0, 0.75);
       color: #fff;
-      z-index: 10000;
+      z-index: 1000;
 
       display: grid;
       row-gap: $gridGap;
@@ -162,7 +162,7 @@
       }
 
       & > * {
-        z-index: 1000;
+        z-index: 100;
       }
     }
 

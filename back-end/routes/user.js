@@ -10,12 +10,12 @@ router.get('/user/:userId/movie/:movieId/settings', async (req, res) => {
 });
 
 router.put('/user/:id/watchlist', async (req, res) => {
-  const userWatchlist = await updateUserWatchlist(req.params.id, req.body.movieId, req.body.value);
+  const userWatchlist = await updateUserWatchlist(req.params.id, req.body.movieId);
   res.send(userWatchlist);
 });
 
 router.put('/user/:id/favorite', async (req, res) => {
-  const userWatchlist = await updateUserFavorite(req.params.id, req.body.movieId, req.body.value);
+  const userWatchlist = await updateUserFavorite(req.params.id, req.body.movieId);
   res.send(userWatchlist);
 });
 

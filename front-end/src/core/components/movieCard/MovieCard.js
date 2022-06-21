@@ -12,7 +12,7 @@ import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 
-import { IconButton } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { updateFavorite, updateWatchlist } from "../../api/watchlist";
 import { fetchUserConfigByMovie } from "../../api/userConfigByMovie";
 
@@ -52,16 +52,18 @@ function Rating({ movie }) {
   const { mainRatingColor, backgroundRatingColor } = getRatingColor(movie);
 
   return (
-    <div className='movie-card__details--rating-box'>
-      <div className='movie-card__details--rating-percentage'>
-        <svg>
-          <circle cx={circlePosition} cy={circlePosition} r={circleRadius} style={{ stroke: backgroundRatingColor }}></circle>
-          <circle cx={circlePosition} cy={circlePosition} r={circleRadius} style={{ strokeDashoffset: circleDashOffset, stroke: mainRatingColor }}></circle>
-          <circle cx={circlePosition} cy={circlePosition} r={circleRadius}></circle>
-        </svg>
+    <Tooltip title='Average user rating' disableInteractive>
+      <div className='movie-card__details--rating-box'>
+        <div className='movie-card__details--rating-percentage'>
+          <svg>
+            <circle cx={circlePosition} cy={circlePosition} r={circleRadius} style={{ stroke: backgroundRatingColor }}></circle>
+            <circle cx={circlePosition} cy={circlePosition} r={circleRadius} style={{ strokeDashoffset: circleDashOffset, stroke: mainRatingColor }}></circle>
+            <circle cx={circlePosition} cy={circlePosition} r={circleRadius}></circle>
+          </svg>
+        </div>
+        <div className='movie-card__details--rating-text'>{parseFloat(movie.vote_average).toFixed(1)}</div>
       </div>
-      <div className='movie-card__details--rating-text'>{parseFloat(movie.vote_average).toFixed(1)}</div>
-    </div>
+    </Tooltip>
   );
 }
 
@@ -152,14 +154,26 @@ function MovieCardDetail({ loggedUserId, movie, onBackdropClick = () => { } }) {
           {movieDetails.id && <Rating movie={movieDetails} />}
           <IconButton onClick={() => switchWatchlist(movie)}>
             {isMovieOnWatchlist()
-              ? <BookmarkIcon />
-              : <BookmarkBorderIcon />
+              ?
+              <Tooltip title='Remove from watchlist' disableInteractive>
+                <BookmarkIcon />
+              </Tooltip>
+              :
+              <Tooltip title='Add to watchlist' disableInteractive>
+                <BookmarkBorderIcon />
+              </Tooltip>
             }
           </IconButton>
           <IconButton onClick={() => switchFavorite(movie)}>
             {isMovieOnFavorites()
-              ? <FavoriteIcon />
-              : <FavoriteBorderIcon />
+              ?
+              <Tooltip title='Remove to favorites' disableInteractive>
+                <FavoriteIcon />
+              </Tooltip>
+              :
+              <Tooltip title='Add to favorites' disableInteractive>
+                <FavoriteBorderIcon />
+              </Tooltip>
             }
           </IconButton>
         </div>

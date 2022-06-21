@@ -1,7 +1,8 @@
 const favoriteDataModel = require("../dataModel/favorite.dataModel");
 
 async function updateUserFavorite(userId, movieId) {
-  const isInFavorite = !!await favoriteDataModel.findOne({ userId, movies: [movieId] });
+  const isInFavorite = !!await favoriteDataModel.findOne({ userId, movies: movieId.toString() });
+  console.log(isInFavorite);
 
   const favorite = await favoriteDataModel.findOneAndUpdate(
     { userId },

@@ -1,7 +1,7 @@
 const watchlistDataModel = require("../dataModel/watchlist.dataModel");
 
 async function updateUserWatchlist(userId, movieId) {
-  const isInWatchlist = !!await watchlistDataModel.findOne({ userId, movies: [movieId] });
+  const isInWatchlist = !!await watchlistDataModel.findOne({ userId, movies: movieId.toString() });
 
   const watchlist = await watchlistDataModel.findOneAndUpdate(
     { userId },
